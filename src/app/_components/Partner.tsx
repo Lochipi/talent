@@ -1,11 +1,12 @@
-import { Button, Image } from "antd";
+import { Image } from "antd";
 import React from "react";
+import Button from "./Button";
 
 const Partner = () => {
   return (
     <div>
       <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
-        <div className="flex flex-col gap -6 container px-2 md:px-4">
+        <div className="gap -6 container flex flex-col px-2 md:px-4">
           <div className="grid items-center gap-6 lg:grid-cols-[1fr_750px] lg:gap-12 xl:grid-cols-[1fr_650px]">
             <Image
               alt="Partners"
@@ -27,18 +28,13 @@ const Partner = () => {
                 </p>
               </div>
               <div className="flex flex-col gap-4 sm:flex-row">
-                <Button
-                  type="link"
-                  className="w-full rounded-3xl border-2 border-gray-400 text-black sm:w-auto"
-                >
-                  Partner With Us
-                </Button>
+                <Button text="Partner With Us" url="/#" color="#46BD61" />
               </div>
             </div>
           </div>
           <div>
             <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-              <div className="flex flex-col justify-center items-center">
+              <div className="flex flex-col items-center justify-center">
                 <h1 className="text-3xl font-bold text-blue-700">20+</h1>
                 <h2 className="text-xl font-semibold">Partners</h2>
               </div>

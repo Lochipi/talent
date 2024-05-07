@@ -9,7 +9,7 @@ import Navbar from "./_components/Navbar";
 export default async function Home() {
 
   return (
-    <main className="flex min-h-screen flex-col items-center bg-gradient-to-b bg-gray-200 text-gray-600">
+    <main className="flex min-h-screen flex-col items-center bg-gradient-to-b text-gray-600">
       <Navbar />
       <Hero />
       <HowWeWork />

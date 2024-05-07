@@ -5,7 +5,7 @@ import Button from "./Button";
 const Event = () => {
   return (
     <div>
-      <section className="w-full py-12 shadow-2xl rounded-3xl md:py-8 lg:py-16 xl:py-24 md:mt-8">
+      <section className="w-full py-12 shadow-xl rounded-3xl md:py-8 lg:py-16 xl:py-24 md:mt-8">
         <div className="container px-4 md:px-6">
           <div className="grid items-center gap-6 lg:grid-cols-[1fr_550px] lg:gap-12 xl:grid-cols-[1fr_650px]">
             <div className="space-y-4 md:space-y-6">
