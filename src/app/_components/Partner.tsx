@@ -11,13 +11,12 @@ const Partner = () => {
             <Image
               alt="Partners"
               className="mx-auto aspect-[13/9] overflow-hidden rounded-3xl object-cover object-center sm:w-full"
-              height={350}
+              style={{ maxWidth: "80%", height: "auto" }}
               src="/hero.jpeg"
-              width={550}
             />
             <div className="space-y-4 md:space-y-6">
               <div className="space-y-3">
-                <h1 className="text-xl font-semibold tracking-tighter sm:text-2xl md:text-3xl lg:text-4xl">
+                <h1 className="text-2xl font-semibold tracking-tighter sm:text-2xl md:text-3xl lg:text-4xl">
                   Want to grow your impact as a Partner?
                 </h1>
                 <p className="max-w-[700px] lg:text-base/relaxed xl:text-xl/relaxed">
@@ -41,37 +40,32 @@ const Partner = () => {
               <Image
                 alt="Partner"
                 className="mx-auto rounded-xl"
-                height={50}
+                style={{ maxWidth: "100%", height: "auto" }}
                 src="/hero.jpeg"
-                width={100}
               />
               <Image
                 alt="Partner"
                 className="mx-auto rounded-xl"
-                height={50}
+                style={{ maxWidth: "100%", height: "auto" }}
                 src="/hero.jpeg"
-                width={100}
               />
               <Image
                 alt="Partner"
                 className="mx-auto rounded-xl"
-                height={50}
+                style={{ maxWidth: "100%", height: "auto" }}
                 src="/hero.jpeg"
-                width={100}
               />
               <Image
                 alt="Partner"
                 className="mx-auto rounded-xl"
-                height={50}
+                style={{ maxWidth: "100%", height: "auto" }}
                 src="/hero.jpeg"
-                width={100}
               />
               <Image
                 alt="Partner"
                 className="mx-auto rounded-xl"
-                height={50}
+                style={{ maxWidth: "100%", height: "auto" }}
                 src="/hero.jpeg"
-                width={100}
               />
             </div>
           </div>
