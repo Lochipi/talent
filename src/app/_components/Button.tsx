@@ -15,11 +15,9 @@ const Button: FC<ButtonProps> = ({ text, url, color = "#46BD61" }) => {
       style={{
         backgroundColor: color,
         color: textColor,
-        padding: "10px 20px", 
-        border: "none",
         textDecoration: "none",
       }}
-      className="px-4 py-2 rounded-3xl"
+      className="text-center px-4 py-2 border-2 border-gray-200 rounded-3xl w-full sm:w-auto" // Add w-full for full width on small screens and w-auto for auto width on larger screens
     >
       {text}
     </Link>
