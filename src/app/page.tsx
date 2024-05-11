@@ -4,13 +4,12 @@ import Paths from "./_components/Paths";
 import Event from "./_components/Event";
 import Partner from "./_components/Partner";
 import Footer from "./_components/Footer";
-import Navbar from "./_components/Navbar";
+import Header from "./_components/navbar/Navbar";
 
 export default async function Home() {
-
   return (
     <main className="flex min-h-screen flex-col items-center bg-gradient-to-b text-gray-600">
-      <Navbar />
+      <Header />
       <Hero />
       <HowWeWork />
       <Paths />
