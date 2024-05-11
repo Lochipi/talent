@@ -9,7 +9,7 @@ const Hero = () => {
           <div className="grid items-center gap-6 lg:grid-cols-[1fr_550px] lg:gap-12 xl:grid-cols-[1fr_650px]">
             <div className="space-y-4 md:space-y-6">
               <div className="space-y-3">
-                <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
+                <h1 className="text-4xl pt-12 md:pt-0 font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
                   Building the Future Together.
                 </h1>
                 <p className="max-w-[600px]  md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
