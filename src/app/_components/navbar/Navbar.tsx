@@ -160,8 +160,8 @@ const Header = () => {
               </div>
               <div className="flex items-center justify-end">
                 <Link
-                  href="/signin"
-                  className="ease-in-up shadow-btn hover:shadow-btn-hover hidden rounded-xl bg-green-900 px-6 py-2 text-base font-medium text-white transition duration-300 hover:bg-opacity-90 md:block md:px-9 lg:px-6 xl:px-9"
+                  href="/api/auth/signin"
+                  className="ease-in-up shadow-btn hover:shadow-btn-hover hidden rounded-xl bg-green-900 px-4 py-2 text-base font-medium text-white transition duration-300 hover:bg-opacity-90 md:block md:px-2 lg:px-4 xl:px-6"
                 >
                   Sign in
                 </Link>

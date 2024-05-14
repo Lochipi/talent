@@ -28,7 +28,7 @@ const Footer = () => {
         </div>
       </div>
       <div className="w-full py-4 bg-[#212529] mt-4">
-        <p className="text-center text-white text-sm">© {year} Industry Talent| All rights reserved</p>
+        <p className="text-center text-white text-sm">© {year} Industry Talent | All rights reserved</p>
       </div>
     </div>
   );
