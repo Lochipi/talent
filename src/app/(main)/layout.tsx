@@ -1,4 +1,5 @@
 import "~/styles/globals.css";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
 
 import { Inter } from "next/font/google";
 
@@ -23,7 +24,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <TRPCReactProvider>
+          <AntdRegistry>{children}</AntdRegistry>
+        </TRPCReactProvider>
       </body>
     </html>
   );
