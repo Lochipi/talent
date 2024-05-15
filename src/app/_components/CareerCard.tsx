@@ -1,34 +1,62 @@
-import { Card, Col, Image, Row, Button, Avatar } from "antd";
-import Meta from "antd/es/card/Meta";
+import React from "react";
+import { Card, Image, Avatar } from "antd";
+import Link from "next/link";
 
-const CareerCard = () => {
+interface NewsItemProps {
+  title: string;
+  description: string;
+  image: string;
+  id: number;
+  instructor: string;
+  instructorImage?: string;
+  imageUrl?: string;
+}
+
+const CareerCard: React.FC<{ careerPath: NewsItemProps }> = ({
+  careerPath,
+}) => {
   return (
-    <div>
-      <Card
-        className="max-w-[300] border-2 border-gray-300"
-        style={{ maxWidth: 300, margin: "auto" }}
-        cover={<Image src="/hero.jpeg" alt="career image" />}
-      >
-        <Meta
-          title="Cloud Computing"
-          description="Build knowledge on AWS Cloud and exposes you to foundational cloud concepts, AWS services, security ..."
+    <Card className="career-card flex max-w-[250px] flex-col gap-8 rounded-lg border-2 border-gray-300 shadow-sm md:max-w-[400px] lg:max-w-[450px]">
+      <div className="flex justify-center">
+        <Image
+          preview={false}
+          src={careerPath?.imageUrl ?? "/hero.jpeg"}
+          alt="career image"
+          className="h-58 rounded-full object-cover md:h-74 border-2 border-gray-300"
         />
-        <Row gutter={16}>
-          <Col span={12} className="flex items-center justify-center mt-2">
-            <div className="ml-0">
-              <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=8" />
+      </div>
+
+      <div className="pt-2">
+        <div>
+          <h2 className="font-semibold text-gray-700">{careerPath?.title}</h2>
+          <p className="text-sm text-gray-400">{careerPath?.description} </p>
+        </div>
+        <div className="mt-4 flex items-center justify-between">
+          <div className="flex items-center gap-1">
+            <Avatar
+              src={
+                careerPath?.instructorImage ??
+                "https://via.placeholder.com/100"
+              }
+              className="mr-2"
+            />
+            <div>
+              <h2 className="text-xs">Instructor</h2>
+              <p className="text-xs">{careerPath?.instructor}</p>
             </div>
-            <div className="md:mx-2">
-              <h2 >Instructor</h2>
-              <p>John Doe</p>
-            </div>
-          </Col>
-          <Col span={12} className="flex items-center justify-center">
-            <Button type="link" href="/foo">Learn More</Button>
-          </Col>
-        </Row>
-      </Card>
-    </div>
+          </div>
+          <div>
+            <Link
+              className="rounded-xl border-2 border-[#46BD61] px-2 py-1 text-xs text-[#46BD61]"
+              type="link"
+              href="/foo"
+            >
+              Learn More
+            </Link>
+          </div>
+        </div>
+      </div>
+    </Card>
   );
 };
 
