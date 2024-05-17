@@ -1,17 +1,39 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
     provider = "prisma-client-js"
 }
 
 datasource db {
     provider = "postgresql"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
     url      = env("DATABASE_URL")
+}
+
+model News {
+    id        Int      @id @default(autoincrement())
+    title     String
+    content   String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Course {
+    id         Int      @id @default(autoincrement())
+    title      String
+    content    String
+    instructor String
+    image      String
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+}
+
+model Event {
+    id        Int      @id @default(autoincrement())
+    title     String
+    content   String
+    date      DateTime
+    location  String
+    image     String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model Post {
@@ -26,7 +48,72 @@ model Post {
     @@index([name])
 }
 
-// Necessary for Next auth
+model Profile {
+    id        Int      @id @default(autoincrement())
+    firstName String
+    lastName  String
+    email     String
+    phone     String
+    bio       String?
+    image     String?
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String   @unique
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model socialProfile {
+    id        Int      @id @default(autoincrement())
+    linkedin  String
+    github    String
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String   @unique
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model skills {
+    id        Int      @id @default(autoincrement())
+    skill     String
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String   @unique
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model education {
+    id        Int      @id @default(autoincrement())
+    school    String
+    field     String
+    gradYear  Int
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String   @unique
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model experience {
+    id        Int      @id @default(autoincrement())
+    company   String
+    position  String
+    startDate DateTime
+    endDate   DateTime
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String   @unique
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model resume {
+    id        Int      @id @default(autoincrement())
+    resume    String
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String   @unique
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+// Next auth
 model Account {
     id                String  @id @default(cuid())
     userId            String
@@ -54,14 +141,20 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String         @id @default(cuid())
     name          String?
-    email         String?   @unique
+    email         String?        @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
+    profile       Profile?
     posts         Post[]
+    socialProfile socialProfile?
+    skills        skills?
+    education     education?
+    experience    experience?
+    resume        resume?
 }
 
 model VerificationToken {
