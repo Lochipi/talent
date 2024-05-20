@@ -45,6 +45,10 @@ export const authOptions: NextAuthOptions = {
         id: user.id,
       },
     }),
+
+    async redirect({ baseUrl }) {
+      return baseUrl + "/dashboard";
+    },
   },
   adapter: PrismaAdapter(db) as Adapter,
   providers: [
