@@ -3,6 +3,8 @@
 import React from "react";
 import { Card } from "antd";
 import { Tabs } from "antd";
+import UserProfileForm from "~/app/_components/dashboard_components/profile_components/prifile";
+import ResumeUpload from "~/app/_components/dashboard_components/profile_components/resume";
 
 const { TabPane } = Tabs;
 
@@ -26,29 +28,12 @@ const page = () => {
             </TabPane>
             <TabPane tab="Profile" key="2">
               <div className="flex gap-4 md:gap-6">
-                <div className="flex-1/3">
-                  <h1>About</h1>
-                  <p>
-                    Tell us about yourself so the industry can know who you are.
-                  </p>
-                </div>
-                <div className="flex-3/4">
-                  <h2>Filling in your profile</h2>
-                </div>
+                <UserProfileForm />
               </div>
             </TabPane>
             <TabPane tab="Resume/CV" key="3">
               <div className="flex gap-4 md:gap-6">
-                <div className="flex-1/3">
-                  <h1>Resume/CV</h1>
-                  <p>
-                    Upload your resume or CV so the industry can know your
-                    qualifications.
-                  </p>
-                </div>
-                <div className="flex-3/4">
-                  <h2>Upload your resume/CV</h2>
-                </div>
+                <ResumeUpload />
               </div>
             </TabPane>
           </Tabs>
