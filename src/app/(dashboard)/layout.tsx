@@ -1,6 +1,6 @@
 import "~/styles/globals.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-
+import { TRPCReactProvider } from "~/trpc/react";
 import Sidebar from "../_components/dashboard_components/sidebar/sidebar";
 
 export const metadata = {
@@ -20,8 +20,10 @@ export default function DashboardLayout({ children }: DashboardProps) {
           <div>
             <Sidebar />
           </div>
-          <div className="px-4 py-2 bg-gray-100 w-full">
-            <AntdRegistry>{children}</AntdRegistry>
+          <div className="w-full bg-gray-100 px-4 py-2">
+            <TRPCReactProvider>
+              <AntdRegistry>{children}</AntdRegistry>
+            </TRPCReactProvider>
           </div>
         </div>
       </body>
