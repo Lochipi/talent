@@ -36,18 +36,6 @@ model Event {
     updatedAt DateTime @updatedAt
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
-
-    @@index([name])
-}
-
 model Profile {
     id        Int      @id @default(autoincrement())
     firstName String
@@ -149,7 +137,6 @@ model User {
     accounts      Account[]
     sessions      Session[]
     profile       Profile?
-    posts         Post[]
     socialProfile socialProfile?
     skills        skills?
     education     education?
