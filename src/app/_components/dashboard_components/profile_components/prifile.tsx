@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Button, Input, Select } from "antd";
 
 function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -23,6 +23,12 @@ const LabeledInput = ({
 };
 
 const UserProfileForm = () => {
+  const [skills, setSkills] = useState(["React", "Node", "TypeScript", "GraphQL", "REST"]);
+
+  const handleChange = (value: string[]) => {
+    setSkills(value);
+  };
+
   return (
     <div className="w-full">
       <form onSubmit={handleSubmit}>
@@ -105,14 +111,14 @@ const UserProfileForm = () => {
                     mode="tags"
                     style={{ width: "100%" }}
                     placeholder="Skills"
-                    value={["test", "test2", "test3"]}
+                    // value=''
                     // onChange={handleChange}
                   >
-                    {/* {skills.map((skill) => (
+                    {skills.map((skill) => (
                       <Select.Option key={skill} value={skill}>
                         {skill}
                       </Select.Option>
-                    ))} */}
+                    ))}
                   </Select>
                 </LabeledInput>
                 <div className="flex flex-col gap-2">

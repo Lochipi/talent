@@ -1,10 +1,10 @@
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
-export const newsRouter = createTRPCRouter({
+export const coursesRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
-    const newsData = await ctx.db.news.findMany({
+    const coursesData = await ctx.db.course.findMany({
       orderBy: { createdAt: "desc" },
     });
-    return newsData;
+    return coursesData;
   }),
 });
