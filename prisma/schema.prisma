@@ -21,8 +21,10 @@ model Course {
     content    String
     instructor String
     image      String
+    enrolled   User[]
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
+    userId     String
 }
 
 model Event {
@@ -129,19 +131,20 @@ model Session {
 }
 
 model User {
-    id            String         @id @default(cuid())
-    name          String?
-    email         String?        @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    profile       Profile?
-    socialProfile socialProfile?
-    skills        skills?
-    education     education?
-    experience    experience?
-    resume        resume?
+    id              String         @id @default(cuid())
+    name            String?
+    email           String?        @unique
+    emailVerified   DateTime?
+    image           String?
+    accounts        Account[]
+    sessions        Session[]
+    profile         Profile?
+    socialProfile   socialProfile?
+    skills          skills?
+    education       education?
+    experience      experience?
+    resume          resume?
+    coursesEnrolled Course[]
 }
 
 model VerificationToken {
