@@ -68,7 +68,7 @@ const CareerCard = () => {
                   <Link
                     className="rounded-xl border-2 border-[#46BD61] px-2 py-1 text-xs text-[#46BD61]"
                     type="link"
-                    href="/foo"
+                    href={`/courses/${course.id}`}
                   >
                     Learn More
                   </Link>
