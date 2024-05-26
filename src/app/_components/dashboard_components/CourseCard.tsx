@@ -7,7 +7,7 @@ const CourseCard = () => {
       <Card
         title="My Courses"
         bordered={false}
-        extra={<Link href="#">Explore Courses</Link>}
+        extra={<Link href="/dashboard/courses">Explore Courses</Link>}
       >
         <div className="flex items-center justify-between">
           <div className="md:px-4">

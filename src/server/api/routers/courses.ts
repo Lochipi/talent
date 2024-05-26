@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const coursesRouter = createTRPCRouter({
@@ -7,4 +8,12 @@ export const coursesRouter = createTRPCRouter({
     });
     return coursesData;
   }),
+  getOne: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .query(async ({ input, ctx }) => {
+      const courseData = await ctx.db.course.findFirst({
+        where: { id: input.id },
+      });
+      return courseData;
+    }),
 });
