@@ -1,14 +1,32 @@
 "use client";
 
 import { Card, Button } from "antd";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { useState } from "react";
 import Course_Slug from "~/app/_components/dashboard_components/course_application/Course_Slug";
 import { api } from "~/trpc/react";
 
-const page = ({ params }: { params: { slug: string } }) => {
+const Course_Unique = ({ params }: { params: { slug: string } }) => {
+  const [hasApplied, setHasApplied] = useState<boolean>(false);
+
+  const mutation = api.courseApply.addMemberToCourse.useMutation({
+    onSuccess: () => {
+      setHasApplied(true);
+    },
+  });
+  const { data: sessionData } = useSession();
+
   const numericSlug = parseInt(params.slug, 10);
   const newParams = { slug: numericSlug };
   const course_data = api.courses.getOne.useQuery({ id: newParams.slug });
+
+  function handleApply() {
+    mutation.mutate({
+      courseId: newParams.slug,
+      memberId: sessionData?.user.id ?? "",
+    });
+  }
 
   return (
     <div className="min-h-screen w-full bg-[#F5F6FA] px-4 py-4 md:px-8 md:py-8 xl:px-12 xl:py-12">
@@ -56,8 +74,13 @@ const page = ({ params }: { params: { slug: string } }) => {
               </div>
             </div>
             <div className="mt-auto items-end">
-              <Button shape="round" type="primary" size="large">
-                Apply Now
+              <Button
+                onClick={handleApply}
+                shape="round"
+                type="primary"
+                size="large"
+              >
+                {hasApplied ? "Applied" : "Apply Now"}
               </Button>
             </div>
           </div>
@@ -71,4 +94,4 @@ const page = ({ params }: { params: { slug: string } }) => {
   );
 };
 
-export default page;
+export default Course_Unique;

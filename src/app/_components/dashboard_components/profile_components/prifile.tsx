@@ -4,37 +4,72 @@ import React, { useState } from "react";
 import { Button, Input, Select, message } from "antd";
 import { supabase } from "~/utils/supabase/client";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { schema } from "~/lib/types";
+import { z } from "zod";
+
+type FormValues = z.infer<typeof schema>;
 
 const LabeledInput = ({
   label,
   children,
+  error,
 }: {
   label: string;
   children: React.ReactNode;
+  error?: string;
 }) => {
   return (
     <div className="labeled-input">
       <label>{label}</label>
       {children}
+      {error && <p className="text-red-500">{error}</p>}
     </div>
   );
 };
 
 const UserProfileForm = () => {
-  // State management for form fields
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [bio, setBio] = useState("");
-  const [linkedin, setLinkedin] = useState("");
-  const [github, setGithub] = useState("");
-  const [skills, setSkills] = useState<string[]>(["React"]);
+  const { data: sessionData } = useSession();
 
   const [uploading] = useState(false);
-  const [profileImage, setProfileImage] = useState("");
 
-  //handle image upload to supabase.
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    formState: { errors, isSubmitting },
+  } = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      names: {
+        firstName: "",
+        lastName: "",
+      },
+      email: "",
+      phoneNumber: 0,
+      bio: "",
+      socials: {
+        linkedin: "",
+        github: "",
+      },
+      skills: [],
+    },
+  });
+
+  const onSubmit = async (data: FormValues) => {
+    console.log("Form Submitted", data);
+    // Handle form submission logic here
+
+    reset();
+  };
+
+  const { data: profileUrl } = supabase.storage
+    .from("talent_imgs/profiles")
+    .getPublicUrl(sessionData?.user.id ?? "default");
+
   const handleImageUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -50,19 +85,13 @@ const UserProfileForm = () => {
       }
 
       const { data: img, error: uploadError } = await supabase.storage
-        .from("talent_imgs/profiles")
-        .upload("profile" + file?.name, file);
+        .from(`talent_imgs/profiles`)
+        .upload(
+          sessionData?.user.id ? sessionData.user.id : "profile" + file.name,
+          file,
+        );
       if (img) {
-        console.log(img);
-      }
-
-      const { data: img_download } = supabase.storage
-        .from("talent_imgs/profiles")
-        .getPublicUrl(`profile + ${img?.path}`);
-      setProfileImage(img_download.publicUrl);
-
-      if (uploadError) {
-        throw uploadError;
+        console.log(img, uploadError);
       }
 
       await message.success("Image updated successfully");
@@ -71,29 +100,9 @@ const UserProfileForm = () => {
     }
   };
 
-  // Handle form submission
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("Form submitted", {
-      firstName,
-      lastName,
-      email,
-      phoneNumber,
-      bio,
-      linkedin,
-      github,
-      skills,
-    });
-  };
-
-  // Handle skills change
-  const handleSkillsChange = (value: string[]) => {
-    setSkills(value);
-  };
-
   return (
     <div className="w-full">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="flex w-full flex-col gap-2">
           <div className="flex gap-2 md:gap-4">
             <div className="flex-1/3">
@@ -104,53 +113,58 @@ const UserProfileForm = () => {
             </div>
             <div className="flex-2/3">
               <div className="flex gap-2">
-                <LabeledInput label="First Name">
+                <LabeledInput
+                  label="First Name"
+                  error={errors.names?.firstName?.message}
+                >
                   <Input
                     placeholder="First Name"
                     type="text"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    required
+                    id="firstname"
+                    {...register("names.firstName")}
                   />
                 </LabeledInput>
-                <LabeledInput label="Last Name">
+                <LabeledInput
+                  label="Last Name"
+                  error={errors.names?.lastName?.message}
+                >
                   <Input
                     placeholder="Last Name"
                     type="text"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    required
+                    id="lastname"
+                    {...register("names.lastName")}
                   />
                 </LabeledInput>
               </div>
               <div className="flex gap-2">
-                <LabeledInput label="Email">
+                <LabeledInput label="Email" error={errors.email?.message}>
                   <Input
                     placeholder="Email"
                     type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
+                    id="email"
+                    {...register("email")}
                   />
                 </LabeledInput>
-                <LabeledInput label="Phone Number">
+                <LabeledInput
+                  label="Phone Number"
+                  error={errors.phoneNumber?.message}
+                >
                   <Input
                     placeholder="Phone Number"
-                    type="tel"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    required
+                    type="number"
+                    id="phoneNumber"
+                    {...(register("phoneNumber"), { valueAsNumber: true })}
                   />
                 </LabeledInput>
               </div>
               <div className="mt-2 flex flex-col gap-3">
                 <div>
                   <Image
-                    src={profileImage}
+                    src={profileUrl.publicUrl}
                     alt="profile image"
-                    width={70}
-                    height={70}
-                    className="mt-2 rounded-full md:mt-4 border-2"
+                    width={50}
+                    height={50}
+                    className="mt-2 rounded-full border-2 md:mt-4"
                   />
                 </div>
                 <LabeledInput label="Profile Picture">
@@ -160,13 +174,12 @@ const UserProfileForm = () => {
                     onChange={handleImageUpload}
                   />
                 </LabeledInput>
-                <LabeledInput label="Bio">
+                <LabeledInput label="Bio" error={errors.bio?.message}>
                   <Input.TextArea
                     autoSize={{ minRows: 3, maxRows: 5 }}
                     placeholder="Bio"
-                    value={bio}
-                    onChange={(e) => setBio(e.target.value)}
-                    required
+                    id="bio"
+                    {...register("bio")}
                   />
                 </LabeledInput>
               </div>
@@ -185,20 +198,24 @@ const UserProfileForm = () => {
             </div>
             <div className="flex-2/3">
               <div className="mt-2 flex gap-2">
-                <LabeledInput label="LinkedIn">
+                <LabeledInput
+                  label="LinkedIn"
+                  error={errors.socials?.linkedin?.message}
+                >
                   <Input
                     placeholder="Enter your LinkedIn profile link"
-                    value={linkedin}
-                    required
-                    onChange={(e) => setLinkedin(e.target.value)}
+                    id="linkedin"
+                    {...register("socials.linkedin")}
                   />
                 </LabeledInput>
-                <LabeledInput label="Github">
+                <LabeledInput
+                  label="Github"
+                  error={errors.socials?.github?.message}
+                >
                   <Input
                     placeholder="Enter your Github profile link"
-                    value={github}
-                    onChange={(e) => setGithub(e.target.value)}
-                    required
+                    id="github"
+                    {...register("socials.github")}
                   />
                 </LabeledInput>
               </div>
@@ -218,37 +235,34 @@ const UserProfileForm = () => {
             <div className="flex-2/3">
               <div className="mt-2 flex flex-col gap-2">
                 <LabeledInput label="Learnt a new skill? Add it to your list of skills. Type it down below">
-                  <Select
-                    mode="tags"
-                    style={{ width: "100%" }}
-                    placeholder="Skills"
-                    value={skills}
-                    onChange={handleSkillsChange}
-                  >
-                    {skills.map((skill) => (
-                      <Select.Option key={skill} value={skill}>
-                        {skill}
-                      </Select.Option>
-                    ))}
-                  </Select>
+                  <Controller
+                    name="skills"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        mode="tags"
+                        style={{ width: "100%" }}
+                        placeholder="Skills"
+                        id="skills"
+                        onChange={(value) => field.onChange(value)}
+                      />
+                    )}
+                  />
                 </LabeledInput>
                 <div className="flex flex-col gap-2">
-                  {skills.length > 0 ? (
-                    <span className="flex gap-2">
-                      {skills.map((skill, index) => (
-                        <li key={index}>{skill}</li>
-                      ))}
-                    </span>
-                  ) : (
-                    <p>No skills added yet.</p>
-                  )}
+                  {/* Display added skills here */}
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div className="mt-2 flex justify-center md:mt-6">
-          <Button type="primary" shape="round" htmlType="submit">
+          <Button
+            disabled={isSubmitting}
+            type="primary"
+            shape="round"
+            htmlType="submit"
+          >
             {uploading ? "Updating..." : "Update Profile"}
           </Button>
         </div>

@@ -7,12 +7,13 @@ import { api } from "~/trpc/react";
 
 const CareerCard = () => {
   const coursesData = api.courses.getAll.useQuery();
+  
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 w-full gap-4 md:grid-cols-2 lg:grid-cols-3">
       {coursesData.isLoading ? (
         <Skeleton active />
       ) : coursesData.data?.length === 0 ? (
-        <div className="min-h-screen w-full bg-[#F5F6FA] px-4 py-4 md:px-8 md:py-8 xl:px-12 xl:py-12">
+        <div className="min-h-[50vh] w-full bg-[#F5F6FA] px-4 py-4 md:px-8 md:py-8 xl:px-12 xl:py-12">
           <h1 className="text-2xl font-bold">Courses</h1>
           <div className="md:mt-8">
             <Card bordered={false} className="mt-4">

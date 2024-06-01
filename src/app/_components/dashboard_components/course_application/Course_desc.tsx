@@ -18,7 +18,7 @@ const Course_desc = ({ params }: { params: number }) => {
       </p>
       <h2 className="mt-8 text-2xl font-semibold">Instructor</h2>
       <p className="text-lg">
-        <span className="font-semibold text-blue-700">
+        <span className="font-semibold text-blue-700 underline pr-2">
           {overview_info.data?.instructor}
         </span>
         will be taking this course.
