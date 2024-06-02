@@ -1,28 +1,34 @@
-import { Card, Image } from "antd";
+"use client";
+
+import { Card, Skeleton } from "antd";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { api } from "~/trpc/react";
 
 const CourseCard = () => {
+  const { data: session } = useSession();
+  const { data: coursesApplied, isLoading } =
+    api.courses.getCoursesAppliedByUser.useQuery({
+      userId: session?.user?.id ?? "",
+    });
   return (
     <div>
       <Card
-        title="My Courses"
+        title="My Courses - Applied"
         bordered={false}
-        extra={<Link href="/dashboard/courses">Explore Courses</Link>}
+        extra={<Link href="/courses">Explore Courses</Link>}
       >
-        <div className="flex items-center justify-between">
-          <div className="md:px-4">
-            <h2 className="text-sm font-extrabold">Software Engineering</h2>
-            <p className="text-xs">Moringa & Computer Pride</p>
-          </div>
-          <div>
-            <Image
-              preview={false}
-              src="https://via.placeholder.com/70"
-              alt="news"
-              className="max-h-[80px] w-full rounded-3xl object-cover"
-            />
-          </div>
-        </div>
+        {isLoading ? (
+          <Skeleton active />
+        ) : (
+          coursesApplied?.map((course) => (
+            <Link key={course.id} href={`/courses/${course.id}`}>
+              <h2 className="cursor-pointer py-1 font-bold text-green-900">
+                {course.title}
+              </h2>
+            </Link>
+          ))
+        )}
       </Card>
     </div>
   );

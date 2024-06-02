@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import CourseCard from "~/app/_components/dashboard_components/CourseCard";
 import Banner from "~/app/_components/dashboard_components/sidebar/Banner";
 import Card_News_Events from "~/app/_components/dashboard_components/Card_News_Events";
@@ -10,20 +9,16 @@ import { Avatar } from "antd";
 const page = async () => {
   const session = await getServerAuthSession();
 
-  if (!session) {
-    redirect("/api/auth/signin");
-  }
-
   return (
     <div className="min-h-screen min-w-full">
-      <div className="flex items-center justify-between px-2 py-4 mb-2 shadow-lg">
+      <div className="mb-2 flex items-center justify-between px-2 py-4 shadow-lg">
         <div className="px-2">
           <IoHomeOutline size={25} />
         </div>
         <div>
           <Avatar
             size={40}
-            src={session.user.image}
+            src={session?.user.image}
             className="cursor-pointer"
           />
         </div>

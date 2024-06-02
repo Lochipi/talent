@@ -7,4 +7,8 @@ export const newsRouter = createTRPCRouter({
     });
     return newsData;
   }),
+  getCount: publicProcedure.query(async ({ ctx }) => {
+    const newsCount = await ctx.db.news.count();
+    return newsCount;
+  }),
 });

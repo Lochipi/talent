@@ -7,10 +7,11 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { schema } from "~/lib/types";
+import { DevTool } from "@hookform/devtools";
+// import { schema } from "~/lib/types";
 import { z } from "zod";
 
-type FormValues = z.infer<typeof schema>;
+// type FormValues = z.infer<typeof schema>;
 
 const LabeledInput = ({
   label,
@@ -41,26 +42,19 @@ const UserProfileForm = () => {
     reset,
     control,
     formState: { errors, isSubmitting },
-  } = useForm<FormValues>({
-    resolver: zodResolver(schema),
-    defaultValues: {
-      names: {
-        firstName: "",
-        lastName: "",
-      },
-      email: "",
-      phoneNumber: 0,
-      bio: "",
-      socials: {
-        linkedin: "",
-        github: "",
-      },
-      skills: [],
-    },
-  });
+  } = useForm<{
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: number;
+    bio: string;
+    linkedIn: string;
+    github: string;
+    skills: [];
+  }>({});
 
-  const onSubmit = async (data: FormValues) => {
-    console.log("Form Submitted", data);
+  const onSubmit = async () => {
+    console.log("Form Submitted");
     // Handle form submission logic here
 
     reset();
@@ -102,7 +96,7 @@ const UserProfileForm = () => {
 
   return (
     <div className="w-full">
-      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex w-full flex-col gap-2">
           <div className="flex gap-2 md:gap-4">
             <div className="flex-1/3">
@@ -115,45 +109,62 @@ const UserProfileForm = () => {
               <div className="flex gap-2">
                 <LabeledInput
                   label="First Name"
-                  error={errors.names?.firstName?.message}
+                  error={errors.firstName?.message}
                 >
-                  <Input
-                    placeholder="First Name"
-                    type="text"
-                    id="firstname"
-                    {...register("names.firstName")}
+                  <input
+                    placeholder="Search..."
+                    className="border-1 w-32 rounded-md border-blue-600 py-2 pl-10 text-sm focus:outline-none sm:w-auto dark:bg-gray-100 focus:dark:border-violet-600 focus:dark:bg-gray-50"
+                    {...register("firstName", {
+                      required: "First Name is required",
+                      minLength: {
+                        value: 1,
+                        message: "First Name is required",
+                      },
+                    })}
                   />
                 </LabeledInput>
                 <LabeledInput
                   label="Last Name"
-                  error={errors.names?.lastName?.message}
+                  error={errors.firstName?.message}
                 >
-                  <Input
-                    placeholder="Last Name"
-                    type="text"
-                    id="lastname"
-                    {...register("names.lastName")}
+                  <input
+                    placeholder="lastname..."
+                    className="border-1 w-32 rounded-md border-blue-600 py-2 pl-10 text-sm focus:outline-none sm:w-auto dark:bg-gray-100 focus:dark:border-violet-600 focus:dark:bg-gray-50"
+                    {...register("lastName", {
+                      required: "Last Name is required",                     
+                      minLength: {
+                        value: 1,
+                        message: "Last Name is required",
+                      },
+                    })}
                   />
                 </LabeledInput>
               </div>
               <div className="flex gap-2">
-                <LabeledInput label="Email" error={errors.email?.message}>
-                  <Input
-                    placeholder="Email"
-                    type="email"
-                    id="email"
-                    {...register("email")}
+                <LabeledInput label="Email" error={errors.firstName?.message}>
+                  <input
+                    placeholder="email..."
+                    className="border-1 w-32 rounded-md border-blue-600 py-2 pl-10 text-sm focus:outline-none sm:w-auto dark:bg-gray-100 focus:dark:border-violet-600 focus:dark:bg-gray-50"
+                    {...register("email", {
+                      required: "Email is required",
+                      minLength: {
+                        value: 1,
+                        message: "Email is required",
+                      },
+                    })}
                   />
                 </LabeledInput>
                 <LabeledInput
-                  label="Phone Number"
+                  label="Phone number"
                   error={errors.phoneNumber?.message}
                 >
-                  <Input
-                    placeholder="Phone Number"
-                    type="number"
-                    id="phoneNumber"
-                    {...(register("phoneNumber"), { valueAsNumber: true })}
+                  <input
+                    placeholder="Phone..."
+                    className="border-1 w-32 rounded-md border-blue-600 py-2 pl-10 text-sm focus:outline-none sm:w-auto dark:bg-gray-100 focus:dark:border-violet-600 focus:dark:bg-gray-50"
+                    {...register("phoneNumber", {
+                      required: "phoneNumber is required",
+                      valueAsNumber: true,
+                    })}
                   />
                 </LabeledInput>
               </div>
@@ -198,24 +209,23 @@ const UserProfileForm = () => {
             </div>
             <div className="flex-2/3">
               <div className="mt-2 flex gap-2">
-                <LabeledInput
-                  label="LinkedIn"
-                  error={errors.socials?.linkedin?.message}
-                >
+                <LabeledInput label="LinkedIn" error={errors.linkedIn?.message}>
                   <Input
                     placeholder="Enter your LinkedIn profile link"
                     id="linkedin"
-                    {...register("socials.linkedin")}
+                    {...register("linkedIn")}
                   />
                 </LabeledInput>
                 <LabeledInput
                   label="Github"
-                  error={errors.socials?.github?.message}
+                  error={errors.phoneNumber?.message}
                 >
-                  <Input
-                    placeholder="Enter your Github profile link"
-                    id="github"
-                    {...register("socials.github")}
+                  <input
+                    placeholder="Github..."
+                    className="border-1 w-32 rounded-md border-blue-600 py-2 pl-10 text-sm focus:outline-none sm:w-auto dark:bg-gray-100 focus:dark:border-violet-600 focus:dark:bg-gray-50"
+                    {...register("github", {
+                      required: "Github is required",
+                    })}
                   />
                 </LabeledInput>
               </div>
@@ -267,6 +277,7 @@ const UserProfileForm = () => {
           </Button>
         </div>
       </form>
+      <DevTool control={control} />
     </div>
   );
 };

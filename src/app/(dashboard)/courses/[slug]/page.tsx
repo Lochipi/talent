@@ -1,11 +1,12 @@
 "use client";
 
-import { Card, Button } from "antd";
+import { Card, Button, message } from "antd";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useState } from "react";
 import Course_Slug from "~/app/_components/dashboard_components/course_application/Course_Slug";
 import { api } from "~/trpc/react";
+import { useRouter } from "next/navigation";
 
 const Course_Unique = ({ params }: { params: { slug: string } }) => {
   const [hasApplied, setHasApplied] = useState<boolean>(false);
@@ -21,11 +22,18 @@ const Course_Unique = ({ params }: { params: { slug: string } }) => {
   const newParams = { slug: numericSlug };
   const course_data = api.courses.getOne.useQuery({ id: newParams.slug });
 
-  function handleApply() {
+  const router = useRouter();
+
+  async function handleApply() {
     mutation.mutate({
       courseId: newParams.slug,
       memberId: sessionData?.user.id ?? "",
     });
+    await message.success("Application successful");
+
+    setTimeout(() => {
+      router.push("/dashboard");
+    }, 1000);
   }
 
   return (
@@ -79,6 +87,7 @@ const Course_Unique = ({ params }: { params: { slug: string } }) => {
                 shape="round"
                 type="primary"
                 size="large"
+                disabled={hasApplied}
               >
                 {hasApplied ? "Applied" : "Apply Now"}
               </Button>

@@ -2,20 +2,25 @@
 
 import { Button, Flex, Menu } from "antd";
 import { LeftCircleTwoTone, RightCircleTwoTone } from "@ant-design/icons";
+import { RiAdminLine } from "react-icons/ri";
+import { FaUserCheck } from "react-icons/fa";
+
 import {
   UserOutlined,
   ProfileOutlined,
   OrderedListOutlined,
   CarryOutOutlined,
-  SettingOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
 import { useState } from "react";
 import Sider from "antd/es/layout/Sider";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.email === "corneliuslochipi@gmail.com";
   return (
     <Sider
       trigger={null}
@@ -58,9 +63,18 @@ const Sidebar = () => {
           },
           {
             key: "5",
-            icon: <SettingOutlined />,
+            icon: <FaUserCheck />,
             label: <Link href="/profile">Profile</Link>,
           },
+          ...(isAdmin
+            ? [
+                {
+                  key: "7",
+                  icon: <RiAdminLine />,
+                  label: <Link href="/admin">Admin</Link>,
+                },
+              ]
+            : []),
           {
             key: "6",
             icon: <LogoutOutlined />,
