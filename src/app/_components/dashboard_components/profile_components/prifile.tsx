@@ -1,63 +1,39 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button, Input, Select, message } from "antd";
+import { Button, Input, Select, message, Form } from "antd";
 import { supabase } from "~/utils/supabase/client";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { DevTool } from "@hookform/devtools";
-// import { schema } from "~/lib/types";
-import { z } from "zod";
+import { api } from "~/trpc/react";
 
-// type FormValues = z.infer<typeof schema>;
+interface FormValuesProps {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  bio: string;
+  linkedIn: string;
+  github: string;
+  skills: string[];
+}
 
-const LabeledInput = ({
-  label,
-  children,
-  error,
-}: {
-  label: string;
-  children: React.ReactNode;
-  error?: string;
-}) => {
-  return (
-    <div className="labeled-input">
-      <label>{label}</label>
-      {children}
-      {error && <p className="text-red-500">{error}</p>}
-    </div>
-  );
-};
+const { TextArea } = Input;
+const { Option } = Select;
 
 const UserProfileForm = () => {
+  const profileDataUpdate = api.profileUpdate.updateProfile.useMutation();
   const { data: sessionData } = useSession();
+  const [uploading, setUploading] = useState(false);
 
-  const [uploading] = useState(false);
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    control,
-    formState: { errors, isSubmitting },
-  } = useForm<{
-    firstName: string;
-    lastName: string;
-    email: string;
-    phoneNumber: number;
-    bio: string;
-    linkedIn: string;
-    github: string;
-    skills: [];
-  }>({});
-
-  const onSubmit = async () => {
-    console.log("Form Submitted");
-    // Handle form submission logic here
-
-    reset();
+  const onFinish = async (values: FormValuesProps) => {
+    console.log("Form Data:", values);
+    try {
+      await profileDataUpdate.mutateAsync(values);
+      await message.success("Profile updated successfully");
+    } catch (error) {
+      await message.error("Error updating profile");
+    }
   };
 
   const { data: profileUrl } = supabase.storage
@@ -68,21 +44,18 @@ const UserProfileForm = () => {
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     try {
+      setUploading(true);
       if (!event.target.files || event.target.files.length === 0) {
         throw new Error("You must select an image to upload.");
       }
 
       const file = event.target.files[0];
 
-      if (!file) {
-        throw new Error("You must select a file to upload.");
-      }
-
       const { data: img, error: uploadError } = await supabase.storage
         .from(`talent_imgs/profiles`)
         .upload(
-          sessionData?.user.id ? sessionData.user.id : "profile" + file.name,
-          file,
+          sessionData?.user.id ? sessionData.user.id : "profile" + file?.name,
+          file!,
         );
       if (img) {
         console.log(img, uploadError);
@@ -91,193 +64,146 @@ const UserProfileForm = () => {
       await message.success("Image updated successfully");
     } catch (error) {
       await message.error("Error uploading image or image exists.");
+    } finally {
+      setUploading(false);
     }
   };
 
   return (
-    <div className="w-full">
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex w-full flex-col gap-2">
-          <div className="flex gap-2 md:gap-4">
-            <div className="flex-1/3">
+    <div className="w-full p-4">
+      <Form onFinish={onFinish} layout="vertical">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 md:flex-row">
+            <div className="md:w-1/3">
               <h1>About</h1>
               <p>
                 Tell us about yourself so the industry can know who you are.
               </p>
             </div>
-            <div className="flex-2/3">
-              <div className="flex gap-2">
-                <LabeledInput
-                  label="First Name"
-                  error={errors.firstName?.message}
-                >
-                  <input
-                    placeholder="Search..."
-                    className="border-1 w-32 rounded-md border-blue-600 py-2 pl-10 text-sm focus:outline-none sm:w-auto dark:bg-gray-100 focus:dark:border-violet-600 focus:dark:bg-gray-50"
-                    {...register("firstName", {
-                      required: "First Name is required",
-                      minLength: {
-                        value: 1,
-                        message: "First Name is required",
-                      },
-                    })}
-                  />
-                </LabeledInput>
-                <LabeledInput
-                  label="Last Name"
-                  error={errors.firstName?.message}
-                >
-                  <input
-                    placeholder="lastname..."
-                    className="border-1 w-32 rounded-md border-blue-600 py-2 pl-10 text-sm focus:outline-none sm:w-auto dark:bg-gray-100 focus:dark:border-violet-600 focus:dark:bg-gray-50"
-                    {...register("lastName", {
-                      required: "Last Name is required",                     
-                      minLength: {
-                        value: 1,
-                        message: "Last Name is required",
-                      },
-                    })}
-                  />
-                </LabeledInput>
-              </div>
-              <div className="flex gap-2">
-                <LabeledInput label="Email" error={errors.firstName?.message}>
-                  <input
-                    placeholder="email..."
-                    className="border-1 w-32 rounded-md border-blue-600 py-2 pl-10 text-sm focus:outline-none sm:w-auto dark:bg-gray-100 focus:dark:border-violet-600 focus:dark:bg-gray-50"
-                    {...register("email", {
-                      required: "Email is required",
-                      minLength: {
-                        value: 1,
-                        message: "Email is required",
-                      },
-                    })}
-                  />
-                </LabeledInput>
-                <LabeledInput
-                  label="Phone number"
-                  error={errors.phoneNumber?.message}
-                >
-                  <input
-                    placeholder="Phone..."
-                    className="border-1 w-32 rounded-md border-blue-600 py-2 pl-10 text-sm focus:outline-none sm:w-auto dark:bg-gray-100 focus:dark:border-violet-600 focus:dark:bg-gray-50"
-                    {...register("phoneNumber", {
-                      required: "phoneNumber is required",
-                      valueAsNumber: true,
-                    })}
-                  />
-                </LabeledInput>
-              </div>
-              <div className="mt-2 flex flex-col gap-3">
-                <div>
+            <div className="flex flex-col gap-4 md:w-2/3">
+              <Form.Item
+                label="First Name"
+                name="firstName"
+                rules={[{ required: true, message: "First Name is required" }]}
+              >
+                <Input placeholder="First Name" />
+              </Form.Item>
+              <Form.Item
+                label="Last Name"
+                name="lastName"
+                rules={[{ required: true, message: "Last Name is required" }]}
+              >
+                <Input placeholder="Last Name" />
+              </Form.Item>
+              <Form.Item
+                label="Email"
+                name="email"
+                rules={[
+                  { required: true, message: "Email is required" },
+                  { type: "email", message: "Invalid email address" },
+                ]}
+              >
+                <Input placeholder="Email" />
+              </Form.Item>
+              <Form.Item
+                label="Phone Number"
+                name="phoneNumber"
+                rules={[
+                  { required: true, message: "Phone Number is required" },
+                ]}
+              >
+                <Input placeholder="Phone Number" />
+              </Form.Item>
+              <div className="flex items-center gap-4">
+                {profileUrl.publicUrl && (
                   <Image
                     src={profileUrl.publicUrl}
                     alt="profile image"
                     width={50}
                     height={50}
-                    className="mt-2 rounded-full border-2 md:mt-4"
+                    className="rounded-full border-2"
                   />
-                </div>
-                <LabeledInput label="Profile Picture">
+                )}
+                <Form.Item label="Profile Picture">
                   <Input
                     accept="image/*"
                     type="file"
                     onChange={handleImageUpload}
                   />
-                </LabeledInput>
-                <LabeledInput label="Bio" error={errors.bio?.message}>
-                  <Input.TextArea
-                    autoSize={{ minRows: 3, maxRows: 5 }}
-                    placeholder="Bio"
-                    id="bio"
-                    {...register("bio")}
-                  />
-                </LabeledInput>
+                </Form.Item>
               </div>
+              <Form.Item label="Bio" name="bio">
+                <TextArea
+                  autoSize={{ minRows: 3, maxRows: 5 }}
+                  placeholder="Bio"
+                />
+              </Form.Item>
             </div>
           </div>
 
-          <hr className="my-2" />
+          <hr className="my-4" />
 
-          {/* social profiles */}
-          <div className="flex w-full gap-2 md:gap-4">
-            <div className="flex-1/3 flex flex-col">
-              <h1>Social profiles</h1>
+          <div className="flex flex-col gap-4 md:flex-row">
+            <div className="md:w-1/3">
+              <h1>Social Profiles</h1>
               <p>
-                Where can people on the internet find you? Fill in the gaps..
+                Where can people on the internet find you? Fill in the gaps.
               </p>
             </div>
-            <div className="flex-2/3">
-              <div className="mt-2 flex gap-2">
-                <LabeledInput label="LinkedIn" error={errors.linkedIn?.message}>
-                  <Input
-                    placeholder="Enter your LinkedIn profile link"
-                    id="linkedin"
-                    {...register("linkedIn")}
-                  />
-                </LabeledInput>
-                <LabeledInput
-                  label="Github"
-                  error={errors.phoneNumber?.message}
-                >
-                  <input
-                    placeholder="Github..."
-                    className="border-1 w-32 rounded-md border-blue-600 py-2 pl-10 text-sm focus:outline-none sm:w-auto dark:bg-gray-100 focus:dark:border-violet-600 focus:dark:bg-gray-50"
-                    {...register("github", {
-                      required: "Github is required",
-                    })}
-                  />
-                </LabeledInput>
-              </div>
+            <div className="flex flex-col gap-4 md:w-2/3">
+              <Form.Item
+                label="LinkedIn"
+                name="linkedIn"
+                rules={[{ type: "url", message: "Invalid LinkedIn URL" }]}
+              >
+                <Input placeholder="Enter your LinkedIn profile link" />
+              </Form.Item>
+              <Form.Item
+                label="Github"
+                name="github"
+                rules={[{ type: "url", message: "Invalid GitHub URL" }]}
+              >
+                <Input placeholder="Enter your GitHub profile link" />
+              </Form.Item>
             </div>
           </div>
 
-          <hr className="my-2" />
+          <hr className="my-4" />
 
-          {/* skills */}
-          <div className="flex w-full gap-2 md:gap-4">
-            <div className="flex-1/3 flex flex-col">
+          <div className="flex flex-col gap-4 md:flex-row">
+            <div className="md:w-1/3">
               <h1>Skills</h1>
               <p>
                 This will help the industry hone in on your skills and strengths
               </p>
             </div>
-            <div className="flex-2/3">
-              <div className="mt-2 flex flex-col gap-2">
-                <LabeledInput label="Learnt a new skill? Add it to your list of skills. Type it down below">
-                  <Controller
-                    name="skills"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        mode="tags"
-                        style={{ width: "100%" }}
-                        placeholder="Skills"
-                        id="skills"
-                        onChange={(value) => field.onChange(value)}
-                      />
-                    )}
-                  />
-                </LabeledInput>
-                <div className="flex flex-col gap-2">
-                  {/* Display added skills here */}
-                </div>
-              </div>
+            <div className="md:w-2/3">
+              <Form.Item label="Skills" name="skills">
+                <Select
+                  mode="tags"
+                  style={{ width: "100%" }}
+                  placeholder="Skills"
+                >
+                  {/* Options can be dynamically generated */}
+                  <Option key="React">React</Option>
+                  <Option key="Node.js">Node.js</Option>
+                  <Option key="GraphQL">GraphQL</Option>
+                </Select>
+              </Form.Item>
             </div>
           </div>
         </div>
-        <div className="mt-2 flex justify-center md:mt-6">
+        <div className="mt-6 flex justify-center">
           <Button
-            disabled={isSubmitting}
             type="primary"
             shape="round"
             htmlType="submit"
+            loading={uploading}
           >
             {uploading ? "Updating..." : "Update Profile"}
           </Button>
         </div>
-      </form>
-      <DevTool control={control} />
+      </Form>
     </div>
   );
 };
